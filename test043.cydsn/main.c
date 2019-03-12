@@ -12,9 +12,9 @@
 // 0..(I2C_RW_BOUNDARY-1) is RW
 #define I2C_PROTO_RW_BOUNDARY 1
 
-//#define BIT_CTL_SCAN_EN 0
-#define BIT_CTL_INTR_EN 1
-#define BIT_CTL_INTR_TRIG 7
+//#define BIT_CTL_SCAN_EN 1
+#define BIT_CTL_INTR_EN 1 << 1
+#define BIT_CTL_INTR_TRIG 1 << 7
 
 typedef struct {
     /* control and configuration regs - writable */
@@ -91,7 +91,7 @@ int main(void) {
     /* Main loop */
     for(;;) {
         // Assert interrupt pin if necessary
-        Pin_Interrupt_Out_Write((i2cregs.ctl & (1 << BIT_CTL_INTR_TRIG)) ? 1 : 0);
+        Pin_Interrupt_Out_Write((i2cregs.ctl & BIT_CTL_INTR_TRIG) ? 1 : 0);
         if (Slider_IsBusy() == Slider_NOT_BUSY) {
             // Apply advanced filters
             Slider_ProcessAllWidgets();
@@ -111,8 +111,8 @@ int main(void) {
             Slider_ScanAllWidgets();
 
             // Sync the interrupt bit with dirty bit 
-            if (dirty && ((i2cregs.ctl >> BIT_CTL_INTR_EN) & 1)) {
-                i2cregs.ctl |= 1 << BIT_CTL_INTR_TRIG;
+            if (dirty && (i2cregs.ctl & BIT_CTL_INTR_EN)) {
+                i2cregs.ctl |= BIT_CTL_INTR_TRIG;
             }
         }
     }
