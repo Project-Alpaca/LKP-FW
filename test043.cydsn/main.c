@@ -16,6 +16,9 @@
 #define BIT_CTL_INTR_EN 1 << 1
 #define BIT_CTL_INTR_TRIG 1 << 7
 
+#define PIN_HIZ 1
+#define PIN_LOW 0
+
 typedef struct {
     /* control and configuration regs - writable */
     // 0: scan_en (currently disabled) 1: interrupt_en 7: interrupt_trig
@@ -91,7 +94,7 @@ int main(void) {
     /* Main loop */
     for(;;) {
         // Assert interrupt pin if necessary
-        Pin_Interrupt_Out_Write((i2cregs.ctl & BIT_CTL_INTR_TRIG) ? 1 : 0);
+        Pin_Interrupt_Out_Write((i2cregs.ctl & BIT_CTL_INTR_TRIG) ? PIN_LOW : PIN_HIZ);
         if (Slider_IsBusy() == Slider_NOT_BUSY) {
             // Apply advanced filters
             Slider_ProcessAllWidgets();
