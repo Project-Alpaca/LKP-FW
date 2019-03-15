@@ -9,9 +9,6 @@
 #include "project.h"
 #include <stdbool.h>
 
-// 0..(I2C_RW_BOUNDARY-1) is RW
-#define I2C_PROTO_RW_BOUNDARY 1
-
 //#define BIT_CTL_SCAN_EN 1
 #define BIT_CTL_INTR_EN 1 << 1
 #define BIT_CTL_INTR_TRIG 1 << 7
@@ -24,17 +21,30 @@ typedef struct {
     // 0: scan_en (currently disabled) 1: interrupt_en 7: interrupt_trig
     uint8_t ctl;
     // TODO
+} __attribute__((packed)) slider_protocol_rw_t;
+
+typedef struct {
     /* data regs - read-only */
     // Version
     uint8_t ver_major;
     uint8_t ver_minor;
     // Bit-field of trigger state
-    uint8_t key0;
-    uint8_t key1;
-    uint8_t key2;
-    uint8_t key3;
+    union {
+        struct {
+            uint8_t key0;
+            uint8_t key1;
+            uint8_t key2;
+            uint8_t key3;
+        };
+        uint8_t keys[4];
+    };
     // Raw signal (TODO)
     //uint8_t key_raw[32];
+} __attribute__((packed)) slider_protocol_ro_t;
+
+typedef struct {
+    slider_protocol_rw_t rw;
+    slider_protocol_ro_t ro;
 } __attribute__((packed)) slider_protocol_t;
 
 volatile slider_protocol_t i2cregs = {0};
@@ -80,12 +90,12 @@ int main(void) {
 
     /* Setup */
     // Set protocol version
-    i2cregs.ver_major = 1;
-    i2cregs.ver_minor = 0;
+    i2cregs.ro.ver_major = 1;
+    i2cregs.ro.ver_minor = 0;
 
     // Initialize I2C
     I2C_Start();
-    I2C_EzI2CSetBuffer1(sizeof(i2cregs), I2C_PROTO_RW_BOUNDARY, (volatile uint8_t *) &i2cregs);
+    I2C_EzI2CSetBuffer1(sizeof(i2cregs), sizeof(i2cregs.rw), (volatile uint8_t *) &i2cregs);
 
     // Initialize CapSense
     Slider_Start();
@@ -94,28 +104,30 @@ int main(void) {
     /* Main loop */
     for(;;) {
         // Assert interrupt pin if necessary
-        Pin_Interrupt_Out_Write((i2cregs.ctl & BIT_CTL_INTR_TRIG) ? PIN_LOW : PIN_HIZ);
+        Pin_Interrupt_Out_Write((i2cregs.rw.ctl & BIT_CTL_INTR_TRIG) ? PIN_LOW : PIN_HIZ);
         if (Slider_IsBusy() == Slider_NOT_BUSY) {
             // Apply advanced filters
             Slider_ProcessAllWidgets();
             bool dirty = false;
             // Check for all individual widgets
-            for (uint8_t i=0; i<(sizeof(SEG_MAPPING) / sizeof(uint32_t)); i++) {
-                int8_t bit = (Slider_IsWidgetActive(SEG_MAPPING[i]) ? 1 : 0);
-                uint8_t state_bit_pos = i & 7;
-                volatile uint8_t *reg = &i2cregs.key0 + (i >> 3);
-                int8_t bit_orig = ((*reg >> state_bit_pos) & 1);
-                if (bit_orig != bit) {
-                    dirty = true;
-                    *reg ^= 1 << state_bit_pos;
+            if (Slider_IsWidgetActive(Slider_SEGMENTS_WDGT_ID)) {
+                for (uint8_t i=0; i<(sizeof(SEG_MAPPING) / sizeof(uint32_t)); i++) {
+                    uint8_t bit = (Slider_IsSensorActive(Slider_SEGMENTS_WDGT_ID, SEG_MAPPING[i]) ? 1 : 0);
+                    uint8_t state_bit_pos = i & 7;
+                    volatile uint8_t *reg = &i2cregs.ro.keys[i >> 3];
+                    uint8_t bit_orig = ((*reg >> state_bit_pos) & 1);
+                    if (bit_orig != bit) {
+                        dirty = true;
+                        *reg ^= 1 << state_bit_pos;
+                    }
                 }
             }
             // Re-arm the widget scanner
             Slider_ScanAllWidgets();
 
             // Sync the interrupt bit with dirty bit 
-            if (dirty && (i2cregs.ctl & BIT_CTL_INTR_EN)) {
-                i2cregs.ctl |= BIT_CTL_INTR_TRIG;
+            if (dirty && (i2cregs.rw.ctl & BIT_CTL_INTR_EN)) {
+                i2cregs.rw.ctl |= BIT_CTL_INTR_TRIG;
             }
         }
     }
