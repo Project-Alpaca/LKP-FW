@@ -37,6 +37,7 @@ typedef struct {
             uint8_t key3;
         };
         uint8_t keys[4];
+        uint32_t keys_active;
     };
     // Raw signal (TODO)
     //uint8_t key_raw[32];
@@ -109,7 +110,7 @@ int main(void) {
             // Apply advanced filters
             Slider_ProcessAllWidgets();
             bool dirty = false;
-            // Check for all individual widgets
+            // Check for all individual sensors
             if (Slider_IsWidgetActive(Slider_SEGMENTS_WDGT_ID)) {
                 for (uint8_t i=0; i<(sizeof(SEG_MAPPING) / sizeof(uint32_t)); i++) {
                     uint8_t bit = (Slider_IsSensorActive(Slider_SEGMENTS_WDGT_ID, SEG_MAPPING[i]) ? 1 : 0);
@@ -121,6 +122,11 @@ int main(void) {
                         *reg ^= 1 << state_bit_pos;
                     }
                 }
+            // No sensor is active, check if any of them were active
+            } else if (i2cregs.ro.keys_active){
+                // Nothing active, zeroing
+                i2cregs.ro.keys_active = 0;
+                dirty = true;
             }
             // Re-arm the widget scanner
             Slider_ScanAllWidgets();
