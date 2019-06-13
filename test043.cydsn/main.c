@@ -39,6 +39,7 @@ typedef struct {
         uint8_t keys[4];
         uint32_t keys_active;
     };
+    // LED lighting rule (TODO)
     // Raw signal (TODO)
     //uint8_t key_raw[32];
 } __attribute__((packed)) slider_protocol_ro_t;
@@ -98,6 +99,9 @@ int main(void) {
     I2C_Start();
     I2C_EzI2CSetBuffer1(sizeof(i2cregs), sizeof(i2cregs.rw), (volatile uint8_t *) &i2cregs);
 
+    // Initialize LED
+    LED_Start();
+
     // Initialize CapSense
     Slider_Start();
     Slider_ScanAllWidgets();
@@ -121,6 +125,7 @@ int main(void) {
                         dirty = true;
                         *reg ^= 1 << state_bit_pos;
                     }
+                    // TODO update the LED according to selected rule
                 }
             // No sensor is active, check if any of them were active
             } else if (i2cregs.ro.keys_active){
