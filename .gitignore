@@ -23,3 +23,7 @@ Export/
 ComponentUpdateLog.txt
 
 # End of https://www.gitignore.io/api/psoccreator
+
+# External deps
+ext/StripLightLib.cylib/*
+!ext/StripLightLib.cylib/.gitkeep
