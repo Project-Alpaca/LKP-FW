@@ -17,6 +17,10 @@
 #define PIN_HIZ 1
 #define PIN_LOW 0
 
+// 0BRG when using WS281x, WBGR when using SK6812RGBW
+#define LED_BG 0x121212
+#define LED_CURSOR 0xffffff
+
 typedef struct {
     /* control and configuration regs - writable */
     // 0: scan_en (currently disabled) 1: interrupt_en 7: interrupt_trig
@@ -102,6 +106,8 @@ int main(void) {
 
     // Initialize LED
     LED_Start();
+    // Hard code the dim level to 1/2 for now
+    LED_Dim(1);
 
     // Initialize CapSense
     Slider_Start();
@@ -128,16 +134,23 @@ int main(void) {
                         *reg ^= 1 << state_bit_pos;
                     }
                     // TODO update the LED according to selected rule
+                    // Assuming the leftmost LED is index 0
+                    LED_Pixel(i, 0, LED_CURSOR);
                 }
             // No sensor is active, check if any of them were active
             } else if (i2cregs.ro.keys_active) {
                 Pin_Status_LED_Write(PIN_LOW);
                 // Nothing active, zeroing
                 i2cregs.ro.keys_active = 0;
+                // Clear LED
+                LED_DisplayClear(LED_BG);
                 dirty = true;
             }
             // Re-arm the widget scanner
             Slider_ScanAllWidgets();
+
+            // Update the LED
+            LED_Trigger(1);
 
             // Sync the interrupt bit with dirty bit 
             if (dirty && (i2cregs.rw.ctl & BIT_CTL_INTR_EN)) {
