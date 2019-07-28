@@ -13,6 +13,7 @@
 #define BIT_CTL_INTR_EN 1 << 1
 #define BIT_CTL_INTR_TRIG 1 << 7
 
+#define PIN_HIGH 1
 #define PIN_HIZ 1
 #define PIN_LOW 0
 
@@ -116,6 +117,7 @@ int main(void) {
             bool dirty = false;
             // Check for all individual sensors
             if (Slider_IsWidgetActive(Slider_SEGMENTS_WDGT_ID)) {
+                Pin_Status_LED_Write(PIN_HIGH);
                 for (uint8_t i=0; i<(sizeof(SEG_MAPPING) / sizeof(uint32_t)); i++) {
                     uint8_t bit = (Slider_IsSensorActive(Slider_SEGMENTS_WDGT_ID, SEG_MAPPING[i]) ? 1 : 0);
                     uint8_t state_bit_pos = i & 7;
@@ -128,7 +130,8 @@ int main(void) {
                     // TODO update the LED according to selected rule
                 }
             // No sensor is active, check if any of them were active
-            } else if (i2cregs.ro.keys_active){
+            } else if (i2cregs.ro.keys_active) {
+                Pin_Status_LED_Write(PIN_LOW);
                 // Nothing active, zeroing
                 i2cregs.ro.keys_active = 0;
                 dirty = true;
