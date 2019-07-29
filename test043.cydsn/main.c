@@ -108,6 +108,8 @@ int main(void) {
     LED_Start();
     // Hard code the dim level to 1/2 for now
     LED_Dim(1);
+    LED_DisplayClear(LED_BG);
+    LED_Trigger(1);
 
     // Initialize CapSense
     Slider_Start();
