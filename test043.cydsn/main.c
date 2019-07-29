@@ -131,11 +131,14 @@ int main(void) {
                     uint8_t bit_orig = ((*reg >> state_bit_pos) & 1);
                     if (bit_orig != bit) {
                         dirty = true;
+                        // Flip the bit
                         *reg ^= 1 << state_bit_pos;
+                        if (bit) {
+                            LED_Pixel(i, 0, LED_CURSOR);
+                        } else {
+                            LED_Pixel(i, 0, LED_BG);
+                        }
                     }
-                    // TODO update the LED according to selected rule
-                    // Assuming the leftmost LED is index 0
-                    LED_Pixel(i, 0, LED_CURSOR);
                 }
             // No sensor is active, check if any of them were active
             } else if (i2cregs.ro.keys_active) {
