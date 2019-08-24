@@ -164,6 +164,8 @@ void loop() {
 }
 #else
 void setup() {
+    Pin_Status_LED_Write(1);
+
     // Initialize I2C
     I2C_Start();
     I2C_EzI2CSetBuffer1(sizeof(Slider_dsRam), sizeof(Slider_dsRam), (uint8_t *) &Slider_dsRam);
@@ -174,6 +176,8 @@ void setup() {
 }
 
 void loop() {
+    static uint32_t begin = 0;
+    static bool state = false;
     if (Slider_IsBusy() == Slider_NOT_BUSY) {
         Slider_ProcessAllWidgets();
         Slider_RunTuner();
