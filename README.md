@@ -1,3 +1,3 @@
-# test043
+# LKP-FW
 
-Random experiments with CY8CKIT-043.
+LKP firmware.

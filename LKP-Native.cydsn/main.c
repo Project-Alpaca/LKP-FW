@@ -9,7 +9,6 @@
 #include "project.h"
 #include <stdbool.h>
 
-#define TUNER
 //#define BIT_CTL_SCAN_EN 1
 #define BIT_CTL_INTR_EN 1 << 1
 #define BIT_CTL_INTR_TRIG 1 << 7
@@ -55,8 +54,16 @@ typedef struct {
     slider_protocol_ro_t ro;
 } __attribute__((packed)) slider_protocol_t;
 
-#ifndef TUNER
-volatile slider_protocol_t i2cregs = {0};
+volatile slider_protocol_t i2cregs = {
+    .rw = {
+        .ctl = 0,
+    },
+    .ro = {
+        .ver_major = 1,
+        .ver_minor = 0,
+        .keys = {0, 0, 0, 0},
+    },
+};
 
 const uint32_t SEG_MAPPING[] = {
     Slider_SEGMENTS_SNS0_ID,
@@ -95,10 +102,6 @@ const uint32_t SEG_MAPPING[] = {
 
 void setup() {
     /* Setup */
-    // Set protocol version
-    i2cregs.ro.ver_major = 1;
-    i2cregs.ro.ver_minor = 0;
-
     // Initialize I2C
     I2C_Start();
     I2C_EzI2CSetBuffer1(sizeof(i2cregs), sizeof(i2cregs.rw), (volatile uint8_t *) &i2cregs);
@@ -162,29 +165,6 @@ void loop() {
         }
     }   
 }
-#else
-void setup() {
-    Pin_Status_LED_Write(1);
-
-    // Initialize I2C
-    I2C_Start();
-    I2C_EzI2CSetBuffer1(sizeof(Slider_dsRam), sizeof(Slider_dsRam), (uint8_t *) &Slider_dsRam);
-
-    // Initialize CapSense
-    Slider_Start();
-    Slider_ScanAllWidgets();
-}
-
-void loop() {
-    static uint32_t begin = 0;
-    static bool state = false;
-    if (Slider_IsBusy() == Slider_NOT_BUSY) {
-        Slider_ProcessAllWidgets();
-        Slider_RunTuner();
-        Slider_ScanAllWidgets();
-    }
-}
-#endif
 
 int main(void) {
     /* Enable global interrupts. */
