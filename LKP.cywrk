@@ -7,8 +7,8 @@
 <wrkspc_folders />
 <files />
 <projects>
-<v>.\LKP-Serial.cydsn\LKP-Serial.cyprj</v>
 <v>.\LKP-Native.cydsn\LKP-Native.cyprj</v>
+<v>.\LKP-Serial.cydsn\LKP-Serial.cyprj</v>
 </projects>
 <workspace_id v="b9ab1636-65e9-4796-b184-444ce490fea5" />
 <WriteAppVersionLastSavedWith v="4.2.0.641" />

@@ -198,7 +198,7 @@ void loop() {
     // Assert interrupt pin if necessary
     Pin_Interrupt_Out_Write((i2cregs.rw.ctl & BIT_CTL_INTR_TRIG) ? PIN_LOW : PIN_HIZ);
     if (Slider_IsBusy() == Slider_NOT_BUSY) {
-        // Apply advanced filters
+        // Apply filters
         Slider_ProcessAllWidgets();
         bool dirty = false;
         // Check for all individual sensors
