@@ -1,0 +1,3 @@
+[submodule "ext/StripLightLib.cylib"]
+	path = ext/StripLightLib.cylib
+	url = https://github.com/dogtopus/StripLightLib.cylib

@@ -11,6 +11,12 @@
   </Group>
   <Data key="DataVersionKey" value="2" />
   <Group key="DWRInstGuidMapping">
+    <Group key="Interrupt">
+      <Data key="7c22e3c5-da93-4267-9ea2-622856a53add/696fcfb7-e3b3-4302-9123-1e2c9e4522d2" value="I2C_SCB_IRQ" />
+      <Data key="abc36ba2-3e83-45c8-82c2-a8e3061b2b0f/2b704f3c-201b-49ce-b9ea-d28896abd3d8" value="LED_fisr" />
+      <Data key="abc36ba2-3e83-45c8-82c2-a8e3061b2b0f/b730f705-089b-4688-acbb-7f4384b0672b" value="LED_cisr" />
+      <Data key="dce056b6-5322-4f04-b138-219917b75965/fc8395ad-4071-45f9-8f52-ee2e27e77d66" value="Slider_ISR" />
+    </Group>
     <Group key="Pin">
       <Data key="3a438227-f990-4fdb-ae27-dbbdcfa5cd98/3e8ee914-a720-4e89-b028-1d5aabbfcbab" value="Slider_Driver_R_Csh" />
       <Data key="3a438227-f990-4fdb-ae27-dbbdcfa5cd98/4e4fc427-17cf-4112-acbc-200ba24a3ac0" value="Slider_Driver_R_Shield" />
@@ -3103,6 +3109,36 @@
       </Group>
       <Group key="1024">
         <Data key="LevelKey" value="0" />
+      </Group>
+    </Group>
+  </Group>
+  <Group key="Interrupt">
+    <Group key="7c22e3c5-da93-4267-9ea2-622856a53add/696fcfb7-e3b3-4302-9123-1e2c9e4522d2">
+      <Group key="CortexM0">
+        <Data key="Assigned" value="True" />
+        <Data key="Priority" value="3" />
+        <Data key="Vector" value="-1" />
+      </Group>
+    </Group>
+    <Group key="abc36ba2-3e83-45c8-82c2-a8e3061b2b0f/2b704f3c-201b-49ce-b9ea-d28896abd3d8">
+      <Group key="CortexM0">
+        <Data key="Assigned" value="True" />
+        <Data key="Priority" value="3" />
+        <Data key="Vector" value="-1" />
+      </Group>
+    </Group>
+    <Group key="abc36ba2-3e83-45c8-82c2-a8e3061b2b0f/b730f705-089b-4688-acbb-7f4384b0672b">
+      <Group key="CortexM0">
+        <Data key="Assigned" value="True" />
+        <Data key="Priority" value="3" />
+        <Data key="Vector" value="-1" />
+      </Group>
+    </Group>
+    <Group key="dce056b6-5322-4f04-b138-219917b75965/fc8395ad-4071-45f9-8f52-ee2e27e77d66">
+      <Group key="CortexM0">
+        <Data key="Assigned" value="True" />
+        <Data key="Priority" value="3" />
+        <Data key="Vector" value="-1" />
       </Group>
     </Group>
   </Group>

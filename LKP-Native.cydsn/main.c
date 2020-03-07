@@ -110,7 +110,7 @@ static void updateLEDWithInterpol();
 #if (NUM_EFFECTIVE_PIXELS == NUM_PHYSICAL_LEDS)
     // TODO
     static void clearLED(uint32_t color) {
-        LED_DisplayClear(color);
+        LED_MemClear(color);
     }
     static void setLEDWithInterpol(uint32 offset, uint32_t color) {
         LED_Pixel((int32_t) offset, 0, color);
@@ -184,10 +184,11 @@ void setup() {
     LED_Start();
     // Hard code the dim level to 1/2 for now
     LED_Dim(1);
-    // Initial LED states
-    clearLED(LED_BG);
-    updateLEDWithInterpol();
-
+    // Set initial LED states
+    if (LED_Ready()) {
+        clearLED(LED_BG);
+        updateLEDWithInterpol();
+    }
     // Initialize CapSense
     Slider_Start();
     Slider_ScanAllWidgets();
@@ -232,7 +233,9 @@ void loop() {
         Slider_ScanAllWidgets();
 
         // Update the LED
-        updateLEDWithInterpol();
+        if (dirty && LED_Ready()) {
+            updateLEDWithInterpol();
+        }
 
         // Sync the interrupt bit with dirty bit 
         if (dirty && (i2cregs.rw.ctl & BIT_CTL_INTR_EN)) {
