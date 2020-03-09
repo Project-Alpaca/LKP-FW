@@ -68,43 +68,8 @@ volatile slider_protocol_t i2cregs = {
     },
 };
 
-const uint32_t SEG_MAPPING[] = {
-    Slider_SEGMENTS_SNS0_ID,
-    Slider_SEGMENTS_SNS1_ID,
-    Slider_SEGMENTS_SNS2_ID,
-    Slider_SEGMENTS_SNS3_ID,
-    Slider_SEGMENTS_SNS4_ID,
-    Slider_SEGMENTS_SNS5_ID,
-    Slider_SEGMENTS_SNS6_ID,
-    Slider_SEGMENTS_SNS7_ID,
-    Slider_SEGMENTS_SNS8_ID,
-    Slider_SEGMENTS_SNS9_ID,
-    Slider_SEGMENTS_SNS10_ID,
-    Slider_SEGMENTS_SNS11_ID,
-    Slider_SEGMENTS_SNS12_ID,
-    Slider_SEGMENTS_SNS13_ID,
-    Slider_SEGMENTS_SNS14_ID,
-    Slider_SEGMENTS_SNS15_ID,
-    Slider_SEGMENTS_SNS16_ID,
-    Slider_SEGMENTS_SNS17_ID,
-    Slider_SEGMENTS_SNS18_ID,
-    Slider_SEGMENTS_SNS19_ID,
-    Slider_SEGMENTS_SNS20_ID,
-    Slider_SEGMENTS_SNS21_ID,
-    Slider_SEGMENTS_SNS22_ID,
-    Slider_SEGMENTS_SNS23_ID,
-    Slider_SEGMENTS_SNS24_ID,
-    Slider_SEGMENTS_SNS25_ID,
-    Slider_SEGMENTS_SNS26_ID,
-    Slider_SEGMENTS_SNS27_ID,
-    Slider_SEGMENTS_SNS28_ID,
-    Slider_SEGMENTS_SNS29_ID,
-    Slider_SEGMENTS_SNS30_ID,
-    Slider_SEGMENTS_SNS31_ID,
-};
-
 static void clearLED(uint32_t color);
-static void setLEDWithInterpol(uint32 offset, uint32_t color);
+static void setLEDWithInterpol(uint32_t offset, uint32_t color);
 static void updateLEDWithInterpol();
 
 #if (NUM_EFFECTIVE_PIXELS == NUM_PHYSICAL_LEDS)
@@ -128,7 +93,7 @@ static void updateLEDWithInterpol();
             _effective_pixels[i] = color;
         }
     }
-    static void setLEDWithInterpol(uint32 offset, uint32_t color) {
+    static void setLEDWithInterpol(uint32_t offset, uint32_t color) {
         _effective_pixels[offset] = color;
     }
     static void updateLEDWithInterpol() {
@@ -204,19 +169,23 @@ void loop() {
         // Check for all individual sensors
         if (Slider_IsWidgetActive(Slider_SEGMENTS_WDGT_ID)) {
             Pin_Status_LED_Write(PIN_HIGH);
-            for (uint8_t i=0; i<(sizeof(SEG_MAPPING) / sizeof(uint32_t)); i++) {
-                uint8_t bit = (Slider_IsSensorActive(Slider_SEGMENTS_WDGT_ID, SEG_MAPPING[i]) ? 1 : 0);
-                uint8_t state_bit_pos = i & 7;
-                volatile uint8_t *reg = &i2cregs.ro.keys[i >> 3];
+            // TODO: might be possible to get the value from the widget config struct.
+            for (uint32_t sensor=0; sensor<Slider_TOTAL_CSD_SENSORS; sensor++) {
+                uint8_t state_bit_pos = sensor & 7;
+                uint8_t state_reg_offset = sensor >> 3;
+                uint8_t bit = (Slider_IsSensorActive(Slider_SEGMENTS_WDGT_ID, sensor) ? 1 : 0);
+
+                volatile uint8_t *reg = &i2cregs.ro.keys[state_reg_offset];
+
                 uint8_t bit_orig = ((*reg >> state_bit_pos) & 1);
                 if (bit_orig != bit) {
                     dirty = true;
                     // Flip the bit
                     *reg ^= 1 << state_bit_pos;
                     if (bit) {
-                        setLEDWithInterpol(i, LED_CURSOR);
+                        setLEDWithInterpol(sensor, LED_CURSOR);
                     } else {
-                        setLEDWithInterpol(i, LED_BG);
+                        setLEDWithInterpol(sensor, LED_BG);
                     }
                 }
             }
