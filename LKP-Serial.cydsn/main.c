@@ -53,10 +53,10 @@ const lkps_hw_info_t hw_info = {
     .model = {'1', '5', '2', '7', '5', ' ', ' ', ' '},
     .device_class = 0xa0u,
     .chip_pn = {'0', '6', '6', '8', '7'},
-    .unk_0xe = 0,
+    .unk_0xe = 0xffu,
     .fw_ver = 144,
     .unk_0x10 = 0,
-    .unk_0x11 = 0,
+    .unk_0x11 = 0x64u,
 };
 
 #define SYNC 0xffu
