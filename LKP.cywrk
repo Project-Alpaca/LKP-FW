@@ -3,7 +3,7 @@
 <!--This file is machine generated and read. It is not intended to be edited by hand.-->
 <!--Due to this, there is no schema for this file.-->
 <CyGuid_2867d519-54d2-4c01-9830-c51cb08bc3dd type_name="CyDesigner.Common.ProjMgmt.Model.CyPrjMgmtWorkspaceSerialize" version="5" xml_contents_version="3" name="LKP" persistent="LKP.cywrk" platform="NOT_USED">
-<current_project name=".\LKP-Native.cydsn\LKP-Native.cyprj" />
+<current_project name=".\LKP-Serial.cydsn\LKP-Serial.cyprj" />
 <wrkspc_folders />
 <files />
 <projects>
@@ -11,8 +11,8 @@
 <v>.\LKP-Serial.cydsn\LKP-Serial.cyprj</v>
 </projects>
 <workspace_id v="b9ab1636-65e9-4796-b184-444ce490fea5" />
-<WriteAppVersionLastSavedWith v="4.2.0.641" />
-<WriteAppMarketingVersionLastSavedWith v="4.2" />
+<WriteAppVersionLastSavedWith v="4.4.0.80" />
+<WriteAppMarketingVersionLastSavedWith v="4.4" />
 <CyGuid_dcbd9771-0334-43dc-9cc3-fe99dc3c5316 type_name="CyDesigner.Common.ProjMgmt.Model.CyPrjMgmtWorkspaceSerialize+CyPrjDependencyList" version="4">
 <wrkspc_dependencies>
 <wrkspc_dependency project="LKP-Serial.cydsn\LKP-Serial.cyprj" dependency="ext\StripLightLib.cylib\StripLightLib.cyprj" />

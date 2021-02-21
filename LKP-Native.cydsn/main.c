@@ -170,7 +170,7 @@ void loop() {
         if (Slider_IsWidgetActive(Slider_SEGMENTS_WDGT_ID)) {
             Pin_Status_LED_Write(PIN_HIGH);
             // TODO: might be possible to get the value from the widget config struct.
-            for (uint32_t sensor=0; sensor<Slider_TOTAL_CSD_SENSORS; sensor++) {
+            for (uint32_t sensor=0; sensor<Slider_SEGMENTS_NUM_SENSORS; sensor++) {
                 uint8_t state_bit_pos = sensor & 7;
                 uint8_t state_reg_offset = sensor >> 3;
                 uint8_t bit = (Slider_IsSensorActive(Slider_SEGMENTS_WDGT_ID, sensor) ? 1 : 0);
