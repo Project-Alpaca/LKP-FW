@@ -1,8 +1,8 @@
 /* ========================================
  *
- * Copyright dogtopus, 2019
- * Released to public domain
- * SPDX-License-Identifier: Unlicense
+ * Copyright dogtopus, 2019-2021
+ *
+ * SPDX-License-Identifier: MIT
  *
  * ========================================
 */
