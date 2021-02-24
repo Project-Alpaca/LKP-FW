@@ -139,7 +139,7 @@ const lkps_hw_info_t hw_info = {
 #endif
 
 
-lkps_state_t rx_state = state_recv_cmd;
+lkps_state_t rx_state = state_recv_sync;
 uint8_t rx_checksum = 0;
 uint8_t tx_checksum = 0;
 uint8_t sensor_value_analog[Slider_TOTAL_CSD_SENSORS] = {0};
@@ -280,6 +280,7 @@ void parse_request(uint8_t data) {
                         break;
                     case cmd_disable_slider_report:
                         auto_report = false;
+                        put_cmd_no_args(cmd_disable_slider_report);
                         break;
                     case cmd_input_report:
                         put_cmd_with_args(cmd_input_report, &sensor_value_analog, sizeof(sensor_value_analog));
@@ -295,8 +296,10 @@ void parse_request(uint8_t data) {
                         clearLED(0);
                         updateLEDWithInterpol();
                         // Reset slider
-                        Slider_Stop();
-                        Slider_Start();
+                        //Slider_Stop();
+                        //Slider_Start();
+                        //Slider_ScanAllWidgets();
+                        // TODO Drain RX buffer
                         // Respond
                         put_cmd_no_args(cmd_reset);
                         break;
