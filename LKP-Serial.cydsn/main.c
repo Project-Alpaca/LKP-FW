@@ -277,6 +277,8 @@ void parse_request(uint8_t data) {
                         break;
                     case cmd_enable_slider_report:
                         auto_report = true;
+                        // Immediately reply the current report buffer
+                        put_cmd_with_args(cmd_input_report, &sensor_value_analog, sizeof(sensor_value_analog));
                         break;
                     case cmd_disable_slider_report:
                         auto_report = false;
