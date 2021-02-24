@@ -396,8 +396,6 @@ void setup() {
     // Initialize CapSense
     Slider_Start();
     Slider_ScanAllWidgets();
-
-    reset_parser();
 }
 
 void loop() {
