@@ -298,12 +298,13 @@ void parse_request(uint8_t data) {
                         clearLED(0);
                         updateLEDWithInterpol();
                         // Reset slider
-                        //Slider_Stop();
-                        //Slider_Start();
-                        //Slider_ScanAllWidgets();
-                        // TODO Drain RX buffer
+                        Slider_Stop();
+                        Slider_Start();
+                        Slider_ScanAllWidgets();
                         // Respond
                         put_cmd_no_args(cmd_reset);
+                        // Drain RX buffer to hopefully prevent unnecessary double resets
+                        UART_SpiUartClearRxBuffer();
                         break;
                     default:
                         break;
@@ -367,6 +368,8 @@ void prepare_input_report() {
                 }
             }
         } else {
+            // Clear report buffer
+            memset(sensor_value_analog, 0, sizeof(sensor_value_analog));
             Pin_Status_LED_Write(PIN_LOW);
         }
         if (auto_report) {
