@@ -366,11 +366,11 @@ void prepare_input_report() {
                     sensor_value_analog[sensor] = calculate_analog_sensor_value(sensor);
                 }
             }
-            if (auto_report) {
-                put_cmd_with_args(cmd_input_report, &sensor_value_analog, sizeof(sensor_value_analog));
-            }
         } else {
             Pin_Status_LED_Write(PIN_LOW);
+        }
+        if (auto_report) {
+            put_cmd_with_args(cmd_input_report, &sensor_value_analog, sizeof(sensor_value_analog));
         }
         // Re-arm the widget scanner
         Slider_ScanAllWidgets();
