@@ -244,7 +244,7 @@ void parse_request(uint8_t data) {
                         uint32_t scratch_value = data;
                         scratch_value *= brightness_scratch;
                         scratch_value /= LKPS_LED_MAX_GLOBAL_BRIGHTNESS;
-                        led_scratch |= (scratch_value & 0xffu) << (8 * (3 - led_color));
+                        led_scratch |= (scratch_value & 0xffu) << (8 * (2 - led_color));
                         if (led_color == 2) {
                             setLEDWithInterpol(led_index, led_scratch);
                             led_scratch = 0;
