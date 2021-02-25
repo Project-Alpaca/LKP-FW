@@ -7,6 +7,8 @@
  * ========================================
 */
 #include "project.h"
+#include "analog_slider.h"
+#include "utils.h"
 #include <stdbool.h>
 
 //#define BIT_CTL_SCAN_EN 1
@@ -24,18 +26,46 @@
 #define NUM_PHYSICAL_LEDS LED_COLUMNS
 #define NUM_EFFECTIVE_PIXELS 32u
 
+#define PROTOCOL_VER_MAJOR 2u
+#define PROTOCOL_VER_MINOR 0u
+#define PROTOCOL_VER_REV 0u
+
+#define VER_CHECK_QUERY 0x1u
+
 typedef struct {
     /* control and configuration regs - writable */
-    // 0: scan_en (currently disabled) 1: interrupt_en 7: interrupt_trig
-    uint8_t ctl;
-    // TODO
+    union {
+        // bank 0: ver
+        struct {
+            // Version check registers - write to this and set bit 0 of check to 1 to perform a protocol version check
+            // Loosely follows Semantic Versioning (https://semver.org/)
+            // major: breaking addition/deletion or drastic behavior change (repurposing registers, etc.)
+            uint8_t ver_major;
+            // minor: backwards compatible addition/deletion
+            uint8_t ver_minor;
+            // rev: minor behavior change
+            uint8_t ver_rev;
+            // 0: query current version
+            uint8_t check;
+        };
+        uint32_t ver;
+    };
+    union {
+        // bank 1: config 0
+        struct {
+            // 0: scan_en (currently disabled) 1: interrupt_en 7: interrupt_trig
+            uint8_t ctl;
+            uint8_t rfu5;
+            uint8_t rfu6;
+            uint8_t rfu7;
+        };
+        uint32_t config0;
+    };
+    // LED lighting rule (TODO)
 } __attribute__((packed)) slider_protocol_rw_t;
 
 typedef struct {
     /* data regs - read-only */
-    // Version
-    uint8_t ver_major;
-    uint8_t ver_minor;
     // Bit-field of trigger state
     union {
         struct {
@@ -47,9 +77,8 @@ typedef struct {
         uint8_t keys[4];
         uint32_t keys_active;
     };
-    // LED lighting rule (TODO)
-    // Raw signal (TODO)
-    //uint8_t key_raw[32];
+    // Analog signal
+    uint8_t keys_analog[32];
 } __attribute__((packed)) slider_protocol_ro_t;
 
 typedef struct {
@@ -59,12 +88,15 @@ typedef struct {
 
 volatile slider_protocol_t i2cregs = {
     .rw = {
-        .ctl = 0,
+        .ver_major = PROTOCOL_VER_MAJOR,
+        .ver_minor = PROTOCOL_VER_MINOR,
+        .ver_rev = PROTOCOL_VER_REV,
+        .check = 0,
+        .config0 = 0,
     },
     .ro = {
-        .ver_major = 1,
-        .ver_minor = 0,
         .keys = {0, 0, 0, 0},
+        .keys_analog = {0},
     },
 };
 
@@ -139,27 +171,7 @@ static void updateLEDWithInterpol();
     }
 #endif
 
-void setup() {
-    /* Setup */
-    // Initialize I2C
-    I2C_Start();
-    I2C_EzI2CSetBuffer1(sizeof(i2cregs), sizeof(i2cregs.rw), (volatile uint8_t *) &i2cregs);
-
-    // Initialize LED
-    LED_Start();
-    // Hard code the dim level to 1/2 for now
-    LED_Dim(1);
-    // Set initial LED states
-    if (LED_Ready()) {
-        clearLED(LED_BG);
-        updateLEDWithInterpol();
-    }
-    // Initialize CapSense
-    Slider_Start();
-    Slider_ScanAllWidgets();
-}
-
-void loop() {
+void update_slider_regs() {
     // Assert interrupt pin if necessary
     Pin_Interrupt_Out_Write((i2cregs.rw.ctl & BIT_CTL_INTR_TRIG) ? PIN_LOW : PIN_HIZ);
     if (Slider_IsBusy() == Slider_NOT_BUSY) {
@@ -188,12 +200,19 @@ void loop() {
                         setLEDWithInterpol(sensor, LED_BG);
                     }
                 }
+                if (bit) {
+                    i2cregs.ro.keys_analog[sensor] = calculate_analog_sensor_value(sensor);
+                } else {
+                    i2cregs.ro.keys_analog[sensor] = 0;
+                }
             }
         // No sensor is active, check if any of them were active
         } else if (i2cregs.ro.keys_active) {
             Pin_Status_LED_Write(PIN_LOW);
             // Nothing active, zeroing
             i2cregs.ro.keys_active = 0;
+            // Clear analog register.
+            memset_v(i2cregs.ro.keys_analog, 0, sizeof(i2cregs.ro.keys_analog));
             // Clear LED
             clearLED(LED_BG);
             dirty = true;
@@ -210,7 +229,40 @@ void loop() {
         if (dirty && (i2cregs.rw.ctl & BIT_CTL_INTR_EN)) {
             i2cregs.rw.ctl |= BIT_CTL_INTR_TRIG;
         }
-    }   
+    }
+}
+
+void check_version() {
+    if (unlikely(i2cregs.rw.check & VER_CHECK_QUERY)) {
+        i2cregs.rw.ver_major = PROTOCOL_VER_MAJOR;
+        i2cregs.rw.ver_minor = PROTOCOL_VER_MINOR;
+        i2cregs.rw.ver_rev = PROTOCOL_VER_REV;
+        i2cregs.rw.check &= ((~VER_CHECK_QUERY) & 0xffu);
+    }
+}
+
+void setup() {
+    /* Setup */
+    // Initialize I2C
+    I2C_Start();
+    I2C_EzI2CSetBuffer1(sizeof(i2cregs), sizeof(i2cregs.rw), (volatile uint8_t *) &i2cregs);
+
+    // Initialize LED
+    LED_Start();
+    // Hard code the dim level to 1/2 for now
+    LED_Dim(1);
+    // Set initial LED states
+    if (LED_Ready()) {
+        clearLED(LED_BG);
+        updateLEDWithInterpol();
+    }
+    // Initialize CapSense
+    Slider_Start();
+    Slider_ScanAllWidgets();
+}
+
+void loop() {
+    update_slider_regs();
 }
 
 int main(void) {
