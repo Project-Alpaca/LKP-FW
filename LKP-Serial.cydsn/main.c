@@ -147,6 +147,7 @@ uint8_t sensor_value_analog[Slider_TOTAL_CSD_SENSORS] = {0};
 bool auto_report = false;
 bool is_escaping = false;
 lkps_command_t rx_current_cmd = cmd_none;
+bool led_ready_to_update = false;
 
 
 void put_sync() {
@@ -214,6 +215,7 @@ void parse_request(uint8_t data) {
     static uint8_t brightness_scratch = 0;
     static uint8_t args_bytes_remaining = 0;
     static uint8_t current_args_offset = 0;
+    
 
     switch (rx_state) {
         case state_recv_cmd:
@@ -235,6 +237,7 @@ void parse_request(uint8_t data) {
             switch (rx_current_cmd) {
                 // Receive arguments
                 case cmd_led_report: {
+                    led_ready_to_update = false;
                     // brightness modifier
                     if (current_args_offset == 0) {
                         brightness_scratch = data;
@@ -269,7 +272,13 @@ void parse_request(uint8_t data) {
                 switch (rx_current_cmd) {
                     case cmd_led_report:
                         // Sync current LED buffer.
-                        updateLEDWithInterpol();
+                        if (LED_Ready()) {
+                            // update immediately when possible
+                            updateLEDWithInterpol();
+                        } else {
+                            // deferred update
+                            led_ready_to_update = true;
+                        }
                         break;
                     case cmd_unk_0x09:
                     case cmd_unk_0x0a:
@@ -380,6 +389,13 @@ void prepare_input_report() {
     }
 }
 
+void check_deferred_led_update() {
+    if (led_ready_to_update && LED_Ready()) {
+        updateLEDWithInterpol();
+        led_ready_to_update = false;
+    }
+}
+
 
 void setup() {
     /* Setup */
@@ -391,6 +407,7 @@ void setup() {
     // Hard code the dim level to 1/2 for now
     LED_Dim(1);
     LED_DisplayClear(0x0);
+    while (!LED_Ready());
     LED_Trigger(1);
 
     // Initialize CapSense
@@ -401,6 +418,7 @@ void setup() {
 void loop() {
     prepare_input_report();
     handle_request();
+    check_deferred_led_update();
 }
 
 int main(void) {
