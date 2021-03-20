@@ -381,11 +381,14 @@ void prepare_input_report() {
             memset(sensor_value_analog, 0, sizeof(sensor_value_analog));
             Pin_Status_LED_Write(PIN_LOW);
         }
+
+        // Re-arm the widget scanner
+        Slider_ScanAllWidgets();
+
+        // Handle auto report
         if (auto_report) {
             put_cmd_with_args(cmd_input_report, &sensor_value_analog, sizeof(sensor_value_analog));
         }
-        // Re-arm the widget scanner
-        Slider_ScanAllWidgets();
     }
 }
 
@@ -399,7 +402,7 @@ void check_deferred_led_update() {
 
 void setup() {
     /* Setup */
-    // Initialize I2C
+    // Initialize UART
     UART_Start();
 
     // Initialize LED
