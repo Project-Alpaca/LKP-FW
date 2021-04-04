@@ -10,6 +10,7 @@
 <v>.\LKP-Native.cydsn\LKP-Native.cyprj</v>
 <v>.\LKP-Serial.cydsn\LKP-Serial.cyprj</v>
 <v>.\LKP-Tuner.cydsn\LKP-Tuner.cyprj</v>
+<v>.\LKPd.cylib\LKPd.cyprj</v>
 </projects>
 <workspace_id v="b9ab1636-65e9-4796-b184-444ce490fea5" />
 <WriteAppVersionLastSavedWith v="4.4.0.80" />
@@ -17,6 +18,7 @@
 <CyGuid_dcbd9771-0334-43dc-9cc3-fe99dc3c5316 type_name="CyDesigner.Common.ProjMgmt.Model.CyPrjMgmtWorkspaceSerialize+CyPrjDependencyList" version="4">
 <wrkspc_dependencies>
 <wrkspc_dependency project="LKP-Serial.cydsn\LKP-Serial.cyprj" dependency="ext\StripLightLib.cylib\StripLightLib.cyprj" />
+<wrkspc_dependency project="LKPd.cylib\LKPd.cyprj" dependency="ext\StripLightLib.cylib\StripLightLib.cyprj" />
 </wrkspc_dependencies>
 </CyGuid_dcbd9771-0334-43dc-9cc3-fe99dc3c5316>
 <CyGuid_63b68103-67f5-4406-8da6-5c8625765b82 type_name="CyDesigner.Common.ProjMgmt.Model.CyPrjMgmtWorkspaceSerialize+CyIgnoredSystemDepsList" version="1">
