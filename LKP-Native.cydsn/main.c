@@ -232,15 +232,6 @@ void update_slider_regs() {
     }
 }
 
-void check_version() {
-    if (unlikely(i2cregs.rw.check & VER_CHECK_QUERY)) {
-        i2cregs.rw.ver_major = PROTOCOL_VER_MAJOR;
-        i2cregs.rw.ver_minor = PROTOCOL_VER_MINOR;
-        i2cregs.rw.ver_rev = PROTOCOL_VER_REV;
-        i2cregs.rw.check &= ((~VER_CHECK_QUERY) & 0xffu);
-    }
-}
-
 void setup() {
     /* Setup */
     // Initialize I2C
