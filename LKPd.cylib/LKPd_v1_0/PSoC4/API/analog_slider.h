@@ -6,6 +6,7 @@
  *
  * ========================================
 */
+
 #pragma once
 
 #include "project.h"
@@ -18,6 +19,6 @@
 
 #define `$INSTANCE_NAME`_SENSOR_MAX_VALUE ((uint8_t) 0xfcu)
 
-extern uint8_t `$INSTANCE_NAME`_calculate_analog_sensor_value(uint32_t sensor);
+extern uint8_t `$INSTANCE_NAME`_CalculateAnalogSensorValue(uint32_t sensor);
 
 /* [] END OF FILE */

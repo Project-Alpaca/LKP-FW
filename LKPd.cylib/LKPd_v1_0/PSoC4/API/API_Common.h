@@ -1,22 +1,20 @@
 /* ========================================
  *
- * Copyright YOUR COMPANY, THE YEAR
- * All Rights Reserved
- * UNPUBLISHED, LICENSED SOFTWARE.
+ * Copyright dogtopus, 2019-2021
  *
- * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF your company.
+ * SPDX-License-Identifier: MIT
  *
  * ========================================
 */
+
 #pragma once
 
 #include "project.h"
 
 #include <stdbool.h>
 
-#include "`$INSTANCE_NAME`_analog_slider.h"
-#include "`$INSTANCE_NAME`_utils.h"
+#include "`$INSTANCE_NAME`_Analog_Slider.h"
+#include "`$INSTANCE_NAME`_Utils.h"
 
 #define `$INSTANCE_NAME`_LKPD_PROTO `$LKPD_PROTO`
 
@@ -24,7 +22,7 @@
 #define `$INSTANCE_NAME`_PROTO_SERIAL 1
 #define `$INSTANCE_NAME`_PROTO_NATIVE 2
 
-void `$INSTANCE_NAME`_Init();
-void `$INSTANCE_NAME`_Task();
+extern void `$INSTANCE_NAME`_Start();
+extern void `$INSTANCE_NAME`_Task();
 
 /* [] END OF FILE */

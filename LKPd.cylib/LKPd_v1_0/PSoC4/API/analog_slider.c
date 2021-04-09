@@ -7,10 +7,10 @@
  * ========================================
 */
 
-#include "`$INSTANCE_NAME`_analog_slider.h"
-#include "`$INSTANCE_NAME`_utils.h"
+#include "`$INSTANCE_NAME`_Analog_Slider.h"
+#include "`$INSTANCE_NAME`_Utils.h"
 
-uint8_t `$INSTANCE_NAME`_calculate_analog_sensor_value(uint32_t sensor) {
+uint8_t `$INSTANCE_NAME`_CalculateAnalogSensorValue(uint32_t sensor) {
     uint32_t scratch = 0;
     uint32 ceil, floor = 0;
     scratch = `$INSTANCE_NAME`_SLIDER_SENSOR_REG(sensor).diff;

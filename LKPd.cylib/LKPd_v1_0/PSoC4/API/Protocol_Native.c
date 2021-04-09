@@ -1,11 +1,8 @@
 /* ========================================
  *
- * Copyright YOUR COMPANY, THE YEAR
- * All Rights Reserved
- * UNPUBLISHED, LICENSED SOFTWARE.
+ * Copyright dogtopus, 2019-2021
  *
- * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF your company.
+ * SPDX-License-Identifier: MIT
  *
  * ========================================
 */
@@ -13,6 +10,7 @@
 #include "`$INSTANCE_NAME`_API_Common.h"
 
 #if (`$INSTANCE_NAME`_LKPD_PROTO == `$INSTANCE_NAME`_PROTO_NATIVE)
+
 //#define BIT_CTL_SCAN_EN 1
 #define BIT_CTL_INTR_EN 1 << 1
 #define BIT_CTL_INTR_TRIG 1 << 7
@@ -129,7 +127,7 @@ static void update_slider_regs() {
                     }
                 }
                 if (bit) {
-                    i2cregs.ro.keys_analog[sensor] = `$INSTANCE_NAME`_calculate_analog_sensor_value(sensor);
+                    i2cregs.ro.keys_analog[sensor] = `$INSTANCE_NAME`_CalculateAnalogSensorValue(sensor);
                 } else {
                     i2cregs.ro.keys_analog[sensor] = 0;
                 }
@@ -160,7 +158,7 @@ static void update_slider_regs() {
     }
 }
 
-void `$INSTANCE_NAME`_Init() {
+void `$INSTANCE_NAME`_Start() {
     // Initialize I2C
     `$INSTANCE_NAME`_IO_I2C_Start();
     `$INSTANCE_NAME`_IO_I2C_EzI2CSetBuffer1(sizeof(i2cregs), sizeof(i2cregs.rw), (volatile uint8_t *) &i2cregs);
@@ -170,10 +168,10 @@ void `$INSTANCE_NAME`_Init() {
     // Hard code the dim level to 1/2 for now
     `$INSTANCE_NAME`_IO_LED_Dim(1);
     // Set initial LED states
-    if (`$INSTANCE_NAME`_IO_LED_Ready()) {
-        `$INSTANCE_NAME`_ClearLED(LED_BG);
-        `$INSTANCE_NAME`_CommitLED();
-    }
+    while (!`$INSTANCE_NAME`_IO_LED_Ready());
+    `$INSTANCE_NAME`_ClearLED(LED_BG);
+    `$INSTANCE_NAME`_CommitLED();
+
     // Initialize CapSense
     `$INSTANCE_NAME`_Slider_Start();
     `$INSTANCE_NAME`_Slider_ScanAllWidgets();
@@ -182,6 +180,7 @@ void `$INSTANCE_NAME`_Init() {
 void `$INSTANCE_NAME`_Task() {
     update_slider_regs();
 }
+
 #endif // (`$INSTANCE_NAME`_LKPD_PROTO == `$INSTANCE_NAME`_PROTO_NATIVE)
 
 /* [] END OF FILE */
