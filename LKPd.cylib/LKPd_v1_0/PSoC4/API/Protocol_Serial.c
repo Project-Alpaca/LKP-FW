@@ -328,8 +328,38 @@ static void check_deferred_led_update() {
     }
 }
 
+static void _set_uart_baud_rate(uint32_t baud) {
+    uint32_t master_divider = CYDEV_BCLK__HFCLK__HZ / baud;
+    master_divider += (CYDEV_BCLK__HFCLK__HZ % baud > baud / 2) ? 1 : 0;
+
+    uint32_t min_tolerance = baud + 1;
+
+    uint32_t clkdiv_final = 0;
+    uint8_t ovs_final = 0;
+
+    for (uint8_t ovs = 16; ovs >= 8; ovs--) {
+        uint32_t clkdiv = master_divider / ovs;
+        uint32_t tolerance = CYDEV_BCLK__HFCLK__HZ / (clkdiv * ovs);
+        tolerance = (tolerance < baud) ? (baud - tolerance) : (tolerance - baud);
+        if (tolerance < min_tolerance) {
+            min_tolerance = tolerance;
+            clkdiv_final = clkdiv;
+            ovs_final = ovs;
+        }
+    }
+
+    // Set SCB clock divider
+    `$INSTANCE_NAME`_IO_UART_SCBCLK_SetDivider(clkdiv_final);
+    // Set oversampling
+    `$INSTANCE_NAME`_IO_UART_CTRL_REG = (`$INSTANCE_NAME`_IO_UART_CTRL_REG & (~`$INSTANCE_NAME`_IO_UART_CTRL_OVS_MASK)) | `$INSTANCE_NAME`_IO_UART_GET_CTRL_OVS(ovs_final);
+}
+
 void `$INSTANCE_NAME`_Start() {
     // Initialize UART
+    `$INSTANCE_NAME`_IO_UART_Init();
+    _set_uart_baud_rate(115200u);
+    // Init() won't set the init flag used by the SCB. Fix it manually.
+    `$INSTANCE_NAME`_IO_UART_initVar = 1u;
     `$INSTANCE_NAME`_IO_UART_Start();
 
     // Initialize LED
