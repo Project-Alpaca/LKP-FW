@@ -297,7 +297,7 @@ static void prepare_input_report() {
         // Check for all individual sensors
         if (`$INSTANCE_NAME`_Slider_IsWidgetActive(`$INSTANCE_NAME`_Slider_SEGMENTS_WDGT_ID)) {
             `$INSTANCE_NAME`_IO_Pin_Status_LED_Write(PIN_HIGH);
-            for (uint8_t sensor=0; sensor<=`$INSTANCE_NAME`_Slider_SEGMENTS_NUM_SENSORS; sensor++) {
+            for (uint8_t sensor=0; sensor<`$INSTANCE_NAME`_Slider_SEGMENTS_NUM_SENSORS; sensor++) {
                 uint8_t bit = (`$INSTANCE_NAME`_Slider_IsSensorActive(`$INSTANCE_NAME`_Slider_SEGMENTS_WDGT_ID, sensor) ? 1 : 0);
                 if (`$INSTANCE_NAME`_likely(!bit)) {
                     sensor_value_analog[sensor] = 0;
