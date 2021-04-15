@@ -12,15 +12,15 @@
   <Data key="DataVersionKey" value="2" />
   <Group key="DWRInstGuidMapping">
     <Group key="Pin">
-      <Data key="291187a2-70dd-4c62-a626-edcb56131399/8aa16a57-8aec-4eb8-b533-82d8bba3413e/33d18022-18bb-4b5a-ab10-fb47889b6a54/23b8206d-1c77-4e61-be4a-b4037d5de5fc" value="LKPd_1_IO_UART_tx" />
-      <Data key="291187a2-70dd-4c62-a626-edcb56131399/8aa16a57-8aec-4eb8-b533-82d8bba3413e/33d18022-18bb-4b5a-ab10-fb47889b6a54/78e33e5d-45ea-4b75-88d5-73274e8a7ce4" value="LKPd_1_IO_UART_rx" />
-      <Data key="291187a2-70dd-4c62-a626-edcb56131399/8aa16a57-8aec-4eb8-b533-82d8bba3413e/896e6353-2527-4426-b180-87da3de5e307" value="LKPd_1_IO_Pin_Status_LED" />
-      <Data key="291187a2-70dd-4c62-a626-edcb56131399/8aa16a57-8aec-4eb8-b533-82d8bba3413e/67351001-a196-450b-a5d8-536a58270d2a" value="LKPd_1_IO_Pin_NeoPixel" />
-      <Data key="291187a2-70dd-4c62-a626-edcb56131399/8aa16a57-8aec-4eb8-b533-82d8bba3413e/e851a3b9-efb8-48be-bbb8-b303b216c393" value="LKPd_1_IO_Pin_Interrupt_Out" />
-      <Data key="291187a2-70dd-4c62-a626-edcb56131399/ada20787-7b63-4f65-920c-abe56c5d45a9/3e8ee914-a720-4e89-b028-1d5aabbfcbab" value="LKPd_1_Slider_Csh" />
-      <Data key="291187a2-70dd-4c62-a626-edcb56131399/ada20787-7b63-4f65-920c-abe56c5d45a9/4e4fc427-17cf-4112-acbc-200ba24a3ac0" value="LKPd_1_Slider_Shield" />
-      <Data key="291187a2-70dd-4c62-a626-edcb56131399/ada20787-7b63-4f65-920c-abe56c5d45a9/67bbdae9-6d7f-4909-bd9b-ee2616c651c8" value="LKPd_1_Slider_Cmod" />
-      <Data key="291187a2-70dd-4c62-a626-edcb56131399/ada20787-7b63-4f65-920c-abe56c5d45a9/7611adc0-783c-42ac-866a-acd65d57cdc4" value="LKPd_1_Slider_Sns" />
+      <Data key="291187a2-70dd-4c62-a626-edcb56131399/8aa16a57-8aec-4eb8-b533-82d8bba3413e/33d18022-18bb-4b5a-ab10-fb47889b6a54/23b8206d-1c77-4e61-be4a-b4037d5de5fc" value="LKPd_IO_UART_tx" />
+      <Data key="291187a2-70dd-4c62-a626-edcb56131399/8aa16a57-8aec-4eb8-b533-82d8bba3413e/33d18022-18bb-4b5a-ab10-fb47889b6a54/78e33e5d-45ea-4b75-88d5-73274e8a7ce4" value="LKPd_IO_UART_rx" />
+      <Data key="291187a2-70dd-4c62-a626-edcb56131399/8aa16a57-8aec-4eb8-b533-82d8bba3413e/896e6353-2527-4426-b180-87da3de5e307" value="LKPd_IO_Pin_Status_LED" />
+      <Data key="291187a2-70dd-4c62-a626-edcb56131399/8aa16a57-8aec-4eb8-b533-82d8bba3413e/67351001-a196-450b-a5d8-536a58270d2a" value="LKPd_IO_Pin_NeoPixel" />
+      <Data key="291187a2-70dd-4c62-a626-edcb56131399/8aa16a57-8aec-4eb8-b533-82d8bba3413e/e851a3b9-efb8-48be-bbb8-b303b216c393" value="LKPd_IO_Pin_Interrupt_Out" />
+      <Data key="291187a2-70dd-4c62-a626-edcb56131399/ada20787-7b63-4f65-920c-abe56c5d45a9/3e8ee914-a720-4e89-b028-1d5aabbfcbab" value="LKPd_Slider_Csh" />
+      <Data key="291187a2-70dd-4c62-a626-edcb56131399/ada20787-7b63-4f65-920c-abe56c5d45a9/4e4fc427-17cf-4112-acbc-200ba24a3ac0" value="LKPd_Slider_Shield" />
+      <Data key="291187a2-70dd-4c62-a626-edcb56131399/ada20787-7b63-4f65-920c-abe56c5d45a9/67bbdae9-6d7f-4909-bd9b-ee2616c651c8" value="LKPd_Slider_Cmod" />
+      <Data key="291187a2-70dd-4c62-a626-edcb56131399/ada20787-7b63-4f65-920c-abe56c5d45a9/7611adc0-783c-42ac-866a-acd65d57cdc4" value="LKPd_Slider_Sns" />
     </Group>
   </Group>
   <Group key="FlashSecurity">
@@ -2039,7 +2039,7 @@
   <Group key="Pin2">
     <Group key="291187a2-70dd-4c62-a626-edcb56131399/8aa16a57-8aec-4eb8-b533-82d8bba3413e/896e6353-2527-4426-b180-87da3de5e307">
       <Group key="0">
-        <Data key="Port Format" value="5,1" />
+        <Data key="Port Format" value="5,0" />
       </Group>
     </Group>
     <Group key="291187a2-70dd-4c62-a626-edcb56131399/8aa16a57-8aec-4eb8-b533-82d8bba3413e/67351001-a196-450b-a5d8-536a58270d2a">
@@ -2049,7 +2049,7 @@
     </Group>
     <Group key="291187a2-70dd-4c62-a626-edcb56131399/8aa16a57-8aec-4eb8-b533-82d8bba3413e/e851a3b9-efb8-48be-bbb8-b303b216c393">
       <Group key="0">
-        <Data key="Port Format" value="5,2" />
+        <Data key="Port Format" value="5,1" />
       </Group>
     </Group>
     <Group key="291187a2-70dd-4c62-a626-edcb56131399/ada20787-7b63-4f65-920c-abe56c5d45a9/3e8ee914-a720-4e89-b028-1d5aabbfcbab">
