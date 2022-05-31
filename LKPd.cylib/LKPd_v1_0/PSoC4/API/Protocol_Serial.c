@@ -18,9 +18,17 @@ typedef enum {
     cmd_led_report,
     cmd_enable_slider_report,
     cmd_disable_slider_report,
-    cmd_unk_0x09 = 0x09,
-    cmd_unk_0x0a,
+    cmd_pingpong_report,
+    cmd_rawcount_report,
+    cmd_enable_rawcount_report,
+    cmd_rawcount_pingpong_report,
+    cmd_set_short_rawcount_offset,
+    cmd_set_short_rawcount_shifts,
+    cmd_short_rawcount_report,
+    cmd_enable_short_rawcount_report,
+    cmd_short_rawcount_pingpong_report,
     cmd_reset = 0x10,
+    cmd_get_cpu_status = 0xe0,
     cmd_exception = 0xee,
     cmd_get_hw_info = 0xf0,
 } lkps_command_t;
@@ -209,8 +217,9 @@ static void parse_request(uint8_t data) {
                             led_data_ready = true;
                         }
                         break;
-                    case cmd_unk_0x09:
-                    case cmd_unk_0x0a:
+                    case cmd_set_short_rawcount_offset:
+                    case cmd_set_short_rawcount_shifts:
+                        // Not really used in game but is required for booting. Stub for now.
                         put_cmd_no_args(rx_current_cmd);
                         break;
                     case cmd_enable_slider_report:
