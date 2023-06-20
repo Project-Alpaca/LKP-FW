@@ -23,14 +23,28 @@
 static const uint32_t LED_BG = 0x121212;
 static const uint32_t LED_CURSOR = 0xffffff;
 
-#define PROTOCOL_VER_MAJOR 2u
+#define PROTOCOL_VER_MAJOR 1u
 #define PROTOCOL_VER_MINOR 0u
 #define PROTOCOL_VER_REV 0u
 
 static const uint8_t VER_CHECK_QUERY = 0x1;
 
 typedef struct {
+    uint8_t value;
+    uint8_t set;
+    uint8_t clear;
+    uint8_t toggle;
+} slider_bit_reg_t;
+
+typedef struct {
     /* control and configuration regs - writable */
+    slider_bit_reg_t ctl;
+    // LED lighting rule (TODO)
+} __attribute__((packed)) slider_protocol_rw_t;
+
+typedef struct {
+    /* data regs - read-only */
+    // Bit-field of trigger state
     union {
         // bank 0: ver
         struct {
@@ -43,27 +57,10 @@ typedef struct {
             // rev: minor behavior change
             uint8_t ver_rev;
             // 0: query current version
-            uint8_t check;
+            uint8_t rfu3;
         };
         uint32_t ver;
     };
-    union {
-        // bank 1: config 0
-        struct {
-            // 0: scan_en (currently disabled) 1: interrupt_en 7: interrupt_trig
-            uint8_t ctl;
-            uint8_t rfu5;
-            uint8_t rfu6;
-            uint8_t rfu7;
-        };
-        uint32_t config0;
-    };
-    // LED lighting rule (TODO)
-} __attribute__((packed)) slider_protocol_rw_t;
-
-typedef struct {
-    /* data regs - read-only */
-    // Bit-field of trigger state
     union {
         struct {
             uint8_t key0;
@@ -79,27 +76,55 @@ typedef struct {
 } __attribute__((packed)) slider_protocol_ro_t;
 
 typedef struct {
-    slider_protocol_rw_t rw;
-    slider_protocol_ro_t ro;
+    union {
+        slider_protocol_rw_t rw;
+        uint8_t rw_data[0x100];
+    };
+    union {
+        slider_protocol_ro_t ro;
+        uint8_t ro_data[sizeof(slider_protocol_ro_t)];
+    };
 } __attribute__((packed)) slider_protocol_t;
 
 static volatile slider_protocol_t i2cregs = {
-    .rw = {
+    .rw_data = {0},
+    .ro = {
         .ver_major = PROTOCOL_VER_MAJOR,
         .ver_minor = PROTOCOL_VER_MINOR,
         .ver_rev = PROTOCOL_VER_REV,
-        .check = 0,
-        .config0 = 0,
-    },
-    .ro = {
+        .rfu3 = 0,
         .keys = {0, 0, 0, 0},
         .keys_analog = {0},
     },
 };
 
+static void process_bit_reg(volatile slider_bit_reg_t *reg) {
+    do {
+        if (reg->set != 0) {
+            reg->value |= reg->set;
+            break;
+        }
+        if (reg->clear != 0) {
+            reg->value &= ~(reg->clear);
+            break;
+        }
+        if (reg->toggle != 0) {
+            reg->value ^= reg->toggle;
+            break;
+        }
+    } while (false);
+    reg->set = 0;
+    reg->clear = 0;
+    reg->toggle = 0;
+}
+
+static inline void process_bit_regs() {
+    process_bit_reg(&i2cregs.rw.ctl);
+}
+
 static void update_slider_regs() {
     // Assert interrupt pin if necessary
-    `$INSTANCE_NAME`_IO_Pin_Interrupt_Out_Write((i2cregs.rw.ctl & BIT_CTL_INTR_TRIG) ? PIN_LOW : PIN_HIZ);
+    `$INSTANCE_NAME`_IO_Pin_Interrupt_Out_Write((i2cregs.rw.ctl.value & BIT_CTL_INTR_TRIG) ? PIN_LOW : PIN_HIZ);
     if (`$INSTANCE_NAME`_Slider_IsBusy() == `$INSTANCE_NAME`_Slider_NOT_BUSY) {
         // Apply filters
         `$INSTANCE_NAME`_Slider_ProcessAllWidgets();
@@ -152,8 +177,8 @@ static void update_slider_regs() {
         }
 
         // Sync the interrupt bit with dirty bit 
-        if (dirty && (i2cregs.rw.ctl & BIT_CTL_INTR_EN)) {
-            i2cregs.rw.ctl |= BIT_CTL_INTR_TRIG;
+        if (dirty && (i2cregs.rw.ctl.value & BIT_CTL_INTR_EN)) {
+            i2cregs.rw.ctl.value |= BIT_CTL_INTR_TRIG;
         }
     }
 }
@@ -178,6 +203,7 @@ void `$INSTANCE_NAME`_Start() {
 }
 
 void `$INSTANCE_NAME`_Task() {
+    process_bit_regs();
     update_slider_regs();
 }
 
